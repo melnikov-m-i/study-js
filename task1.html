@@ -4,14 +4,12 @@
         <meta charset="UTF-8">
         <title>JS Task1</title>
         <style>
-
             .wrap {
                 float: left;
                 text-align: right;
             }
 
             .tf-width {
-                display: inline-block;
                 margin: 5px 0;
             }
 
@@ -21,7 +19,6 @@
             }
 
             .tf-height {
-                display: inline-block;
                 margin: 5px 0;
             }
 
@@ -37,6 +34,7 @@
                 border-radius: 2px;
                 margin: 5px;
                 text-align: center;
+                width: 70%;
             }
 
             .square {
@@ -52,10 +50,10 @@
     <body>
         <form class="wrap">
             <label for="width"> Ширина: </label>
-            <input type="text" id="width" name="width" class="tf-width" placeholder="100">
+            <input type="number" min="0" pattern="\d+" id="width" name="width" class="tf-width" placeholder="100">
             <br>
             <label for="height"> Высота: </label>
-            <input type="text" id="height" name="height" class="tf-height" placeholder="100">
+            <input type="number" min="0" pattern="\d+" id="height" name="height" class="tf-height" placeholder="100">
             <br>
             <input type="button" class="bt-random-color" value="Случаный цвет">
         </form>
@@ -63,18 +61,39 @@
         <div class="square"></div>
 
     <script>
-        var tfWidth = document.getElementById('width').value || 100;
-        var tfHeight = document.getElementById('height').value || 100;
+        var tfWidth = document.getElementById('width');
+        var tfHeight = document.getElementById('height');
         var elSquare = document.querySelector('.square');
+        var btColor = document.querySelector('.bt-random-color');
 
-        elSquare.onclick = function (event) {
-            //var randomColor = Math.random() * 255;
-            console.log(event);
+        btColor.onclick = function (event) {
+            var randomColor = {
+                r: Math.random() * 255,
+                g: Math.random() * 255,
+                b: Math.random() * 255
+            };
+
+            elSquare.style.backgroundColor = "rgb(" + randomColor.r + ", " + randomColor.g + ", " + randomColor.b + ")";
         };
 
-        console.log(tfWidth);
-        console.log(tfHeight);
-        console.log(elSquare);
+        tfWidth.oninput = function(event) {
+            if(isNaN(event.target.value) || event.target.value < 0) {
+                alert('Введите натуральное число');
+                tfWidth.value = 0;
+            }
+
+            elSquare.style.width = event.target.value + "px";
+        };
+
+        tfHeight.oninput = function(event) {
+            if(isNaN(event.target.value) || event.target.value < 0) {
+                alert('Введите натуральное число');
+                tfHeight.value = 0;
+            }
+
+            elSquare.style.height = event.target.value + "px";
+        };
+
     </script>
 
     </body>
