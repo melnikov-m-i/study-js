@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>JS Task1</title>
+        <style>
+
+            .wrap {
+                float: left;
+                text-align: right;
+            }
+
+            .tf-width {
+                display: inline-block;
+                margin: 5px 0;
+            }
+
+            .tf-width::placeholder {
+                color: #d9d9d9;
+                opacity: 1;
+            }
+
+            .tf-height {
+                display: inline-block;
+                margin: 5px 0;
+            }
+
+            .tf-height::placeholder {
+                color: #d9d9d9;
+                opacity: 1;
+            }
+
+            .bt-random-color {
+                display: inline-block;
+                background: #c0c0c0;
+                border: 1px solid #000;
+                border-radius: 2px;
+                margin: 5px;
+                text-align: center;
+            }
+
+            .square {
+                width: 100px;
+                height: 100px;
+                background: #c0c0c0;
+                clear: both;
+                margin: 90px;
+            }
+
+        </style>
+    </head>
+    <body>
+        <form class="wrap">
+            <label for="width"> Ширина: </label>
+            <input type="text" id="width" name="width" class="tf-width" placeholder="100">
+            <br>
+            <label for="height"> Высота: </label>
+            <input type="text" id="height" name="height" class="tf-height" placeholder="100">
+            <br>
+            <input type="button" class="bt-random-color" value="Случаный цвет">
+        </form>
+
+        <div class="square"></div>
+
+    <script>
+        var tfWidth = document.getElementById('width').value || 100;
+        var tfHeight = document.getElementById('height').value || 100;
+        var elSquare = document.querySelector('.square');
+
+        elSquare.onclick = function (event) {
+            //var randomColor = Math.random() * 255;
+            console.log(event);
+        };
+
+        console.log(tfWidth);
+        console.log(tfHeight);
+        console.log(elSquare);
+    </script>
+
+    </body>
+</html>
