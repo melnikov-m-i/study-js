@@ -1,0 +1,40 @@
+.wrap {
+    float: left;
+    text-align: right;
+}
+
+.tf-width {
+    margin: 5px 0;
+}
+
+.tf-width::placeholder {
+    color: #d9d9d9;
+    opacity: 1;
+}
+
+.tf-height {
+    margin: 5px 0;
+}
+
+.tf-height::placeholder {
+    color: #d9d9d9;
+    opacity: 1;
+}
+
+.bt-random-color {
+    display: inline-block;
+    background: #c0c0c0;
+    border: 1px solid #000;
+    border-radius: 2px;
+    margin: 5px;
+    text-align: center;
+    width: 70%;
+}
+
+.square {
+    width: 100px;
+    height: 100px;
+    background: #c0c0c0;
+    clear: both;
+    margin: 90px;
+}
