@@ -1,0 +1,35 @@
+.contact-form {
+    position: relative;
+    margin: 2%;
+}
+
+.contact-form form {
+    width: 30%;
+    text-align: center;
+}
+
+.contact-form input, .contact-form textarea {
+    display: block;
+    border: 1px solid #000;
+    padding: 8px;
+    margin: 10px 0;
+    width: 90%;
+}
+
+.contact-form textarea {
+    resize: none;
+    height: 120px;
+}
+
+.contact-form input[type="button"] {
+    cursor: pointer;
+    display: inline-block;
+    border-radius: 5px;
+    width: 100px;
+    padding: 3px;
+}
+
+.error-form {
+    color: red;
+}
+

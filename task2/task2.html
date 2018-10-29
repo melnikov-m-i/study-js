@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>JS Task2</title>
+        <link rel="stylesheet" type="text/css" href="./task2.css">
+        <script src="https://api-maps.yandex.ru/2.1/?apikey=20ac599d-ffe0-475a-842d-88c0e7867c0f&lang=ru_RU" type="text/javascript"></script>
+    </head>
+    <body>
+        <div class="contact-form">
+            <form>
+                <input type="text" name="fio" placeholder="ФИО" required>
+                <input type="tel" name="phone" placeholder="Телефон" pattern="^[ 0-9]+$" required>
+                <input type="email" name="email" placeholder="E-mail">
+                <div id="map" style="width: 95%; height: 200px"></div>
+                <textarea name="comment" cols="80" rows="8"
+                          placeholder="Комментарий к заказу (макс. 500 символов)" maxlength="500"></textarea>
+                <input type="button" value="Отправить">
+            </form>
+        </div>
+
+        <div class="error-form"></div>
+
+        <script type="application/javascript" src="./task2.js"></script>
+    </body>
+</html>
