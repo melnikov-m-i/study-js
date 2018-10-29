@@ -1,0 +1,57 @@
+.wrap {
+    position: relative;
+    margin: 1%;
+}
+
+.filter {
+    width: 40%;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.filter input {
+    display: inline-block;
+    border: 1px solid #000;
+    padding: 5px;
+    margin: 5px 10px;
+    width: 80px;
+}
+
+.filter input[type="button"] {
+    cursor: pointer;
+    display: inline-block;
+    border-radius: 5px;
+    padding: 5px 10px;
+}
+
+.products {
+    width: 40%;
+}
+
+.products table {
+    border: 1px solid #000;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.products thead {
+    background: #c0c0c0;
+}
+
+.products tr {
+    border-bottom: 1px solid #000;
+}
+
+.products td, th {
+    width: 25%;
+    padding: 10px;
+}
+
+.products th:first-child, td:first-child {
+    width: 7%;
+}
+
+.products th:last-child, td:last-child {
+    width: 10%;
+}
+

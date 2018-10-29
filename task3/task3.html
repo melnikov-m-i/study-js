@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>JS Task 3</title>
+        <link rel="stylesheet" type="text/css" href="./task3.css">
+    </head>
+    <body>
+    <div class="wrap">
+        <div class="filter">
+            <form>
+                <label>Цена от:
+                    <input type="text" min="0" step="1" pattern="/^\d*$/" placeholder="0" name="fromPrice">
+                </label>
+                <label>до:
+                    <input type="number" min="0" step="1" pattern="/^\d*$/" placeholder="10000" name="toPrice">
+                </label>
+                <input type="button" value="Обновить">
+            </form>
+        </div>
+        <div class="products">
+        </div>
+    </div>
+
+    <script type="application/javascript" src="./task3.js"></script>
+
+    </body>
+</html>
