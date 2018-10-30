@@ -1,0 +1,15 @@
+.container {
+    width: 75%;
+}
+
+canvas {
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
+.info-request {
+    text-align: center;
+    font-size: 16px;
+    margin-top: 10px;
+}
