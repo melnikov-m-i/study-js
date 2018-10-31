@@ -1,0 +1,82 @@
+.container {
+    position: relative;
+    margin: 1%;
+}
+
+table.el-table {
+    border: 1px solid #000;
+    border-collapse: collapse;
+    min-width: 100px;
+    width: 90%;
+    min-height: 100px;
+    height: auto;
+    margin: 10px 10px 20px;
+    float: left;
+}
+
+table.el-table tr {
+    border-bottom: 1px solid #000;
+}
+
+table.el-table tr:last-of-type {
+    border-bottom: none;
+}
+
+table.el-table td, th {
+    border-right: 1px solid #000;
+}
+
+table.el-table td:last-of-type, th:last-of-type {
+    border-right: none;
+}
+
+.bt-rows-table {
+    width: 80px;
+    margin: 10px;
+    text-align: center;
+    clear: both;
+}
+
+.bt-rows-table button {
+    width: 30px;
+    height: 28px;
+    margin: 5px;
+    padding: 5px 10px;
+    border: 1px solid #000;
+    border-radius: 5px;
+}
+
+.bt-columns-table {
+    width: 40px;
+    margin: 10px;
+    text-align: center;
+    float: left;
+}
+
+.bt-columns-table button {
+    width: 30px;
+    height: 28px;
+    margin: 5px;
+    padding: 5px 10px;
+    border: 1px solid #000;
+    border-radius: 5px;
+}
+
+.edit-td {
+    position: relative;
+    padding: 0;
+}
+
+.edit-td .edit-area {
+    border: none;
+    margin: 0;
+    padding: 0;
+    display: block;
+    resize: none;
+    outline: none;
+    overflow: auto;
+}
+
+.edit-controls {
+    position: absolute;
+}
