@@ -1,6 +1,9 @@
 .container {
     position: relative;
     margin: 1%;
+    height: auto;
+    display: flex;
+    flex-wrap: wrap;
 }
 
 table.el-table {
@@ -11,7 +14,6 @@ table.el-table {
     min-height: 100px;
     height: auto;
     margin: 10px 10px 20px;
-    float: left;
 }
 
 table.el-table tr {
@@ -24,6 +26,9 @@ table.el-table tr:last-of-type {
 
 table.el-table td, th {
     border-right: 1px solid #000;
+    width: 150px;
+    height: 20px;
+    padding: 5px;
 }
 
 table.el-table td:last-of-type, th:last-of-type {
@@ -31,10 +36,9 @@ table.el-table td:last-of-type, th:last-of-type {
 }
 
 .bt-rows-table {
-    width: 80px;
-    margin: 10px;
+    width: 100%;
+    margin: 10px auto;
     text-align: center;
-    clear: both;
 }
 
 .bt-rows-table button {
@@ -48,9 +52,7 @@ table.el-table td:last-of-type, th:last-of-type {
 
 .bt-columns-table {
     width: 40px;
-    margin: 10px;
-    text-align: center;
-    float: left;
+    margin: auto 10px;
 }
 
 .bt-columns-table button {
@@ -68,15 +70,20 @@ table.el-table td:last-of-type, th:last-of-type {
 }
 
 .edit-td .edit-area {
-    border: none;
-    margin: 0;
+    margin: 3px;
     padding: 0;
     display: block;
     resize: none;
     outline: none;
     overflow: auto;
+    border: 1px solid #000;
 }
 
 .edit-controls {
     position: absolute;
+}
+
+.edit-controls button {
+    margin-right: 5px;
+    border: 1px solid #000;
 }

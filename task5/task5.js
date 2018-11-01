@@ -2,39 +2,25 @@ window.onload = function() {
     var table = new Table('.container');
 
     table.createTable();
-    table.addColumn();
-    table.addRow();
     table.insertButtonsForRows();
     table.insertButtonsForColumns();
 
     table.getTable().ondblclick = table.editCell.bind(table);
 
-    /*
-    table.getTable().onclick = function(event) {
-        console.log(event.target.cellIndex);
-        console.log(event.target.parentElement.rowIndex);
-    }
-    */
+    var tappedTimer = null;
 
-    /*
-    var clickTimer = null;
-
-    function touchStart() {
-        if (clickTimer == null) {
-            clickTimer = setTimeout(function () {
-                clickTimer = null;
-                alert("single");
-
+    table.getTable().ontouchstart = function(event) {
+        if (tappedTimer === null) {
+            tappedTimer = setTimeout(function () {
+                tappedTimer = null;
             }, 500)
         } else {
-            clearTimeout(clickTimer);
-            clickTimer = null;
-            alert("double");
-
+            clearTimeout(tappedTimer);
+            tappedTimer = null;
+            table.editCell(event);
         }
+        event.preventDefault();
     }
-    */
-
 };
 
 class Table {
@@ -72,18 +58,29 @@ class Table {
             return false;
         } else {
             let index = table.rows.length;
+            let dataLS = localStorage.getItem(this._getKeyLocalStorage());
+            dataLS = JSON.parse(dataLS);
+
+            if(!Array.isArray(dataLS)) {
+                dataLS = [];
+            }
 
             table.insertRow(index);
+            dataLS[index] = [];
 
             if(index == 0) {
                 table.rows[index].insertCell(0);
+                dataLS[index][0] = '';
             } else {
                 let countColumns = table.rows[index - 1].cells.length;
 
                 for(let i = 0; i < countColumns; i++) {
                     table.rows[index].insertCell(i);
+                    dataLS[index].push('');
                 }
             }
+
+            this._writeDataInLocalStorage(dataLS);
         }
     }
 
@@ -111,19 +108,41 @@ class Table {
 
         if(isDelRow) {
             this.table.deleteRow(-1);
+
+            let dataLS = localStorage.getItem(this._getKeyLocalStorage());
+            dataLS = JSON.parse(dataLS);
+
+            if(Array.isArray(dataLS)) {
+                dataLS.pop();
+                this._writeDataInLocalStorage(dataLS);
+            }
         }
     };
 
     addColumn() {
         let rows = this.table.rows;
+        let dataLS = localStorage.getItem(this._getKeyLocalStorage());
+        dataLS = JSON.parse(dataLS);
 
         if(rows.length == 0) {
             return false;
         }
 
+        if(!Array.isArray(dataLS)) {
+            dataLS = [];
+        }
+
         for(let i = 0; i < rows.length; i++) {
             rows[i].insertCell(-1);
+
+            if(!Array.isArray(dataLS[i])) {
+                dataLS[i] = [];
+            }
+
+            dataLS[i].push('');
         }
+
+        this._writeDataInLocalStorage(dataLS);
     }
 
     deleteColumn() {
@@ -148,9 +167,18 @@ class Table {
         }
 
         if(isDelColumn) {
+            let dataLS = localStorage.getItem(this._getKeyLocalStorage());
+            dataLS = JSON.parse(dataLS);
+
             for(let i = 0; i < rows.length; i++) {
                 rows[i].deleteCell(-1);
+
+                if(Array.isArray(dataLS) && Array.isArray(dataLS[i])) {
+                    dataLS[i].pop();
+                }
             }
+
+            this._writeDataInLocalStorage(dataLS);
         }
     }
 
@@ -249,11 +277,23 @@ class Table {
 
         let editControls = this.table.querySelector('.edit-controls');
         editControls.onclick = this._handlerEditControlsClick.bind(this, editControls);
+        editControls.ontouchstart = this._handlerEditControlsClick.bind(this, editControls);
     }
 
     _finishTdEdit(td, isOk) {
         if (isOk) {
             td.innerHTML = td.firstChild.value;
+
+            let rowIndex = td.parentElement.rowIndex;
+            let cellIndex = td.cellIndex;
+            let dataLS = localStorage.getItem(this._getKeyLocalStorage());
+            dataLS = JSON.parse(dataLS);
+
+            if(Array.isArray(dataLS) && Array.isArray(dataLS[rowIndex])) {
+                dataLS[rowIndex][cellIndex] = td.innerHTML;
+                this._writeDataInLocalStorage(dataLS);
+            }
+
         } else {
             td.innerHTML = this.editingTd.data;
         }
@@ -288,9 +328,8 @@ class Table {
         this.keyLocalStorage = 'el-table-' + Math.random().toString(36).substr(2, 9);
 
         let data = this._valuesTableToArray();
-        data = data ? data : '';
 
-        localStorage.setItem(this._getKeyLocalStorage(), data);
+        this._writeDataInLocalStorage(data);
     }
 
     _valuesTableToArray() {
@@ -313,9 +352,12 @@ class Table {
             }
         }
 
-        arTable = JSON.stringify(arTable);
-
         return arTable;
+    }
+
+    _writeDataInLocalStorage(data) {
+        data = Array.isArray(data) ? JSON.stringify(data) : '';
+        localStorage.setItem(this._getKeyLocalStorage(), data);
     }
 
 }
