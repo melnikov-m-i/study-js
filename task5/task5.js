@@ -1,15 +1,17 @@
-window.onload = function() {
+document.addEventListener("DOMContentLoaded", ready);
+
+function ready() {
     var table = new Table('.container');
 
     table.createTable();
     table.insertButtonsForRows();
     table.insertButtonsForColumns();
 
-    table.getTable().ondblclick = table.editCell.bind(table);
+    table.getTable().addEventListener('dblclick', table.editCell.bind(table));
 
     var tappedTimer = null;
 
-    table.getTable().ontouchstart = function(event) {
+    table.getTable().addEventListener('touchstart', function(event) {
         if (tappedTimer === null) {
             tappedTimer = setTimeout(function () {
                 tappedTimer = null;
@@ -20,7 +22,7 @@ window.onload = function() {
             table.editCell(event);
         }
         event.preventDefault();
-    }
+    });
 };
 
 class Table {
@@ -189,7 +191,7 @@ class Table {
         elem.className = 'bt-rows-table';
 
         button = document.createElement('button');
-        button.onclick = this.addRow.bind(this);
+        button.addEventListener('click', this.addRow.bind(this));
 
         btText = document.createTextNode('+');
 
@@ -198,7 +200,7 @@ class Table {
         elem.appendChild(button);
 
         button = document.createElement('button');
-        button.onclick = this.deleteRow.bind(this);
+        button.addEventListener('click', this.deleteRow.bind(this));
 
         btText = document.createTextNode('-');
 
@@ -216,7 +218,7 @@ class Table {
         elem.className = 'bt-columns-table';
 
         button = document.createElement('button');
-        button.onclick = this.addColumn.bind(this);
+        button.addEventListener('click', this.addColumn.bind(this));
 
         btText = document.createTextNode('+');
 
@@ -224,7 +226,7 @@ class Table {
         elem.appendChild(button);
 
         button = document.createElement('button');
-        button.onclick = this.deleteColumn.bind(this);
+        button.addEventListener('click', this.deleteColumn.bind(this));
 
         btText = document.createTextNode('-');
 
@@ -276,8 +278,9 @@ class Table {
         );
 
         let editControls = this.table.querySelector('.edit-controls');
-        editControls.onclick = this._handlerEditControlsClick.bind(this, editControls);
-        editControls.ontouchstart = this._handlerEditControlsClick.bind(this, editControls);
+
+        editControls.addEventListener('click', this._handlerEditControlsClick.bind(this, editControls));
+        editControls.addEventListener('touchstart', this._handlerEditControlsClick.bind(this, editControls));
     }
 
     _finishTdEdit(td, isOk) {

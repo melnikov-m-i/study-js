@@ -29,7 +29,11 @@
     padding: 3px;
 }
 
-.error-form {
+.message-area p.success-order {
+    color: green;
+}
+
+.message-area p.errors-order {
     color: red;
 }
 

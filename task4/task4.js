@@ -1,5 +1,6 @@
-window.onload = function() {
+document.addEventListener("DOMContentLoaded", ready);
 
+function ready() {
     var ctx = document.getElementById('myChart').getContext('2d');
     var chart = new Chart(ctx, {
         type: 'line',
@@ -91,28 +92,33 @@ function startDrawChart(chart) {
 
     setTimeout(function go() {
         getDataOfCpu().then(function(cpu) {
-            if(cpu !== null) {
-                countRequest += 1;
+            return new Promise(function(resolve, reject) {
+                if(cpu !== null) {
+                    countRequest += 1;
 
-                if(cpu == 0) {
-                    countRequestOfError += 1;
+                    if(cpu == 0) {
+                        countRequestOfError += 1;
 
-                    let arDataOfCpu = chart.data.datasets[0].data;
+                        let arDataOfCpu = chart.data.datasets[0].data;
 
-                    if(arDataOfCpu.length != 0) {
-                        cpu = arDataOfCpu[arDataOfCpu.length - 1].y;
+                        if(arDataOfCpu.length != 0) {
+                            cpu = arDataOfCpu[arDataOfCpu.length - 1].y;
+                        } else {
+                            resolve();
+                            return;
+                        }
                     }
-                    else {
-                        return;
-                    }
+
+                    addDataInChart(chart, {x: new Date(), y: cpu}) ;
+                    document.querySelector('.info-request').innerHTML = "Число запросов: " + countRequest +
+                        ". Процент запросов, вернувших ошибку: " + (countRequestOfError/countRequest*100).toPrecision(2) + "%";
+
+                    resolve();
                 }
-
-                addDataInChart(chart, {x: new Date(), y: cpu}) ;
-                document.querySelector('.info-request').innerHTML = "Число запросов: " + countRequest +
-                    ". Процент запросов, вернувших ошибку: " + (countRequestOfError/countRequest*100).toPrecision(2) + "%";
-            }
+            });
+        }).then(function() {
+            setTimeout(go, 5000);
         });
-        setTimeout(go, 5000);
     }, 5000);
 }
 
