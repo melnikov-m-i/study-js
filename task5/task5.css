@@ -24,14 +24,14 @@ table.el-table tr:last-of-type {
     border-bottom: none;
 }
 
-table.el-table td, th {
+table.el-table td, table.el-table th {
     border-right: 1px solid #000;
     width: 150px;
     height: 20px;
     padding: 5px;
 }
 
-table.el-table td:last-of-type, th:last-of-type {
+table.el-table td:last-of-type, table.el-table th:last-of-type {
     border-right: none;
 }
 
@@ -70,20 +70,13 @@ table.el-table td:last-of-type, th:last-of-type {
 }
 
 .edit-td .edit-area {
-    margin: 3px;
+    margin: 0;
     padding: 0;
     display: block;
     resize: none;
     outline: none;
     overflow: auto;
     border: 1px solid #000;
-}
-
-.edit-controls {
-    position: absolute;
-}
-
-.edit-controls button {
-    margin-right: 5px;
-    border: 1px solid #000;
+    width: 100%;
+    height: 18px;
 }

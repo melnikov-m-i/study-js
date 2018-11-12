@@ -7,11 +7,13 @@ function ready() {
     table.insertButtonsForRows();
     table.insertButtonsForColumns();
 
-    table.getTable().addEventListener('dblclick', table.editCell.bind(table));
+    var tableNode = table.getNode();
+
+    tableNode.addEventListener('dblclick', table.editCell.bind(table));
 
     var tappedTimer = null;
 
-    table.getTable().addEventListener('touchstart', function(event) {
+    tableNode.addEventListener('touchstart', function(event) {
         if (tappedTimer === null) {
             tappedTimer = setTimeout(function () {
                 tappedTimer = null;
@@ -34,7 +36,7 @@ class Table {
         }
     }
 
-    getTable() {
+    getNode() {
         return this.table;
     }
 
@@ -45,9 +47,8 @@ class Table {
         } else {
             this.table = document.createElement('table');
             this.table.className = 'el-table';
-            this.table.insertRow(0).insertCell(0);
             this.container.appendChild(this.table);
-
+            this.keyLocalStorage = 'el-table';
             this._startLocalStorage();
         }
     }
@@ -60,29 +61,17 @@ class Table {
             return false;
         } else {
             let index = table.rows.length;
-            let dataLS = localStorage.getItem(this._getKeyLocalStorage());
-            dataLS = JSON.parse(dataLS);
-
-            if(!Array.isArray(dataLS)) {
-                dataLS = [];
-            }
+            let countColumns = index === 0 ? 1 : table.rows[index - 1].cells.length;
 
             table.insertRow(index);
-            dataLS[index] = [];
+            this.dataLS[index] = [];
 
-            if(index == 0) {
-                table.rows[index].insertCell(0);
-                dataLS[index][0] = '';
-            } else {
-                let countColumns = table.rows[index - 1].cells.length;
-
-                for(let i = 0; i < countColumns; i++) {
-                    table.rows[index].insertCell(i);
-                    dataLS[index].push('');
-                }
+            for(let i = 0; i < countColumns; i++) {
+                table.rows[index].insertCell(i);
+                this.dataLS[index].push('');
             }
 
-            this._writeDataInLocalStorage(dataLS);
+            this._save();
         }
     }
 
@@ -110,41 +99,24 @@ class Table {
 
         if(isDelRow) {
             this.table.deleteRow(-1);
-
-            let dataLS = localStorage.getItem(this._getKeyLocalStorage());
-            dataLS = JSON.parse(dataLS);
-
-            if(Array.isArray(dataLS)) {
-                dataLS.pop();
-                this._writeDataInLocalStorage(dataLS);
-            }
+            this.dataLS.pop();
+            this._save();
         }
     };
 
     addColumn() {
         let rows = this.table.rows;
-        let dataLS = localStorage.getItem(this._getKeyLocalStorage());
-        dataLS = JSON.parse(dataLS);
 
         if(rows.length == 0) {
             return false;
         }
 
-        if(!Array.isArray(dataLS)) {
-            dataLS = [];
-        }
-
         for(let i = 0; i < rows.length; i++) {
             rows[i].insertCell(-1);
-
-            if(!Array.isArray(dataLS[i])) {
-                dataLS[i] = [];
-            }
-
-            dataLS[i].push('');
+            this.dataLS[i].push('');
         }
 
-        this._writeDataInLocalStorage(dataLS);
+        this._save();
     }
 
     deleteColumn() {
@@ -169,18 +141,12 @@ class Table {
         }
 
         if(isDelColumn) {
-            let dataLS = localStorage.getItem(this._getKeyLocalStorage());
-            dataLS = JSON.parse(dataLS);
-
             for(let i = 0; i < rows.length; i++) {
                 rows[i].deleteCell(-1);
-
-                if(Array.isArray(dataLS) && Array.isArray(dataLS[i])) {
-                    dataLS[i].pop();
-                }
+                this.dataLS[i].pop();
             }
 
-            this._writeDataInLocalStorage(dataLS);
+            this._save();
         }
     }
 
@@ -264,39 +230,31 @@ class Table {
 
         let input = document.createElement('input');
         input.setAttribute('type', 'text');
-        input.style.width = td.clientWidth + 'px';
-        input.style.height = td.clientHeight + 'px';
         input.className = 'edit-area';
-
         input.value = td.innerHTML;
         td.innerHTML = '';
         td.appendChild(input);
         input.focus();
 
-        td.insertAdjacentHTML("beforeEnd",
-            '<div class="edit-controls"><button class="edit-ok">OK</button><button class="edit-cancel">CANCEL</button></div>'
-        );
+        input.addEventListener('blur', function (event) {
+            this._finishTdEdit(this.editingTd.elem, true);
+        }.bind(this));
 
-        let editControls = this.table.querySelector('.edit-controls');
+        input.addEventListener('keydown', function (e) {
+            e = e || window.event;
+            if (e.code == 'Escape' || e.key == 'Escape' || e.keyCode == 27) {
+                //проблема с blur(после нажатия срабатывает событие blur, поэтому в LS попадают не те данные)
+                this._finishTdEdit(this.editingTd.elem, false);
+            }
+        }.bind(this));
 
-        editControls.addEventListener('click', this._handlerEditControlsClick.bind(this, editControls));
-        editControls.addEventListener('touchstart', this._handlerEditControlsClick.bind(this, editControls));
     }
 
     _finishTdEdit(td, isOk) {
         if (isOk) {
             td.innerHTML = td.firstChild.value;
-
-            let rowIndex = td.parentElement.rowIndex;
-            let cellIndex = td.cellIndex;
-            let dataLS = localStorage.getItem(this._getKeyLocalStorage());
-            dataLS = JSON.parse(dataLS);
-
-            if(Array.isArray(dataLS) && Array.isArray(dataLS[rowIndex])) {
-                dataLS[rowIndex][cellIndex] = td.innerHTML;
-                this._writeDataInLocalStorage(dataLS);
-            }
-
+            this.dataLS[td.parentElement.rowIndex][td.cellIndex] = td.innerHTML;
+            this._save();
         } else {
             td.innerHTML = this.editingTd.data;
         }
@@ -305,65 +263,33 @@ class Table {
         this.editingTd = null;
     }
 
-    _handlerEditControlsClick(editControls, event) {
-        let target = event.target;
-
-        while (target != editControls) {
-            if (target.className == 'edit-cancel') {
-                this._finishTdEdit(this.editingTd.elem, false);
-                return;
-            }
-
-            if (target.className == 'edit-ok') {
-                this._finishTdEdit(this.editingTd.elem, true);
-                return;
-            }
-
-            target = target.parentNode;
-        }
-    }
-
     _getKeyLocalStorage() {
         return this.keyLocalStorage;
     }
 
     _startLocalStorage() {
-        this.keyLocalStorage = 'el-table-' + Math.random().toString(36).substr(2, 9);
+        let LS = localStorage.getItem(this._getKeyLocalStorage());
 
-        let data = this._valuesTableToArray();
-
-        this._writeDataInLocalStorage(data);
-    }
-
-    _valuesTableToArray() {
-        let table = this.table;
-        let arTable = [];
-
-        if(table === undefined || table === null) {
-            console.log('Таблицы не существует');
-            return;
-        }
-
-        if(table.rows.length == 0 || table.rows[0].cells.length == 0) {
-            return
-        }
-
-        for(let i = 0; i < table.rows.length; i++) {
-            arTable[i] = [];
-            for(let j = 0; j < table.rows[i].cells.length; j++) {
-                arTable[i][j] = table.rows[i].cells[j].innerHTML;
+        if (LS === null || LS === undefined) {
+            this.dataLS = [];
+            this.addRow();
+        } else {
+            this.dataLS = JSON.parse(LS);
+            if (Array.isArray(this.dataLS) && this.dataLS.length > 0) {
+                for (let i = 0; i < this.dataLS.length; i++) {
+                    this.table.insertRow(i);
+                    for (let j = 0; j < this.dataLS[i].length; j++) {
+                        this.table.rows[i].insertCell(j);
+                        this.table.rows[i].cells[j].innerHTML = this.dataLS[i][j];
+                    }
+                }
             }
-        }
 
-        return arTable;
+        }
     }
 
-    _writeDataInLocalStorage(data) {
-        data = Array.isArray(data) ? JSON.stringify(data) : '';
-        localStorage.setItem(this._getKeyLocalStorage(), data);
+    _save() {
+        localStorage.setItem(this._getKeyLocalStorage(), JSON.stringify(this.dataLS));
     }
 
 }
-
-
-

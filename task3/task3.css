@@ -47,11 +47,11 @@
     padding: 10px;
 }
 
-.products th:first-child, td:first-child {
+.products th:first-child, .products td:first-child {
     width: 7%;
 }
 
-.products th:last-child, td:last-child {
+.products th:last-child, .products td:last-child {
     width: 10%;
 }
 

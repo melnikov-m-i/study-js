@@ -1,10 +1,11 @@
 document.addEventListener("DOMContentLoaded", ready);
 
 function ready() {
+    var myPlacemark;
 
     document.querySelector('.contact-form input[type="button"]').addEventListener('click', function() {
         var messageArea = document.querySelector('.message-area');
-        var errors = validateForm();
+        var errors = validateForm(document.querySelector('.contact-form form'));
 
         if(errors.length) {
             messageArea.innerHTML = '<p class="errors-order">' + errors.join('<br/>') + '</p>';
@@ -16,26 +17,60 @@ function ready() {
     ymaps.ready(init);
 };
 
-function validateForm() {
-    var form = document.querySelector('.contact-form form');
+function validateForm(form) {
+
+    var validators = {
+        fio: {
+            required: true,
+            messageNoValidation: "Не заполнено поле ФИО",
+            validate: function (fio) {
+                return fio.trim() !== '';
+            }
+        },
+        phone: {
+            required: true,
+            messageNoValidation: "Телефон должен содержать только числа",
+            validate: function (phone) {
+                return /^\d+$/g.test(phone);
+            }
+        },
+        email: {
+            required: false,
+            messageNoValidation: "Email должен содержать символ собаки (@)",
+            validate: function (email) {
+                return email.indexOf('@') > 0;
+            }
+        },
+        comment: {
+            required: false,
+            messageNoValidation: "Комментарий к заказу должен быть не более 500 символов",
+            validate: function (comment) {
+                return comment.trim().length <= 500;
+            }
+        },
+        map: {
+            required: true,
+            messageNoValidation: "Не отмечен адрес дооставки",
+            validate: function (placeMark) {
+                return placeMark === undefined ? false : true;
+            }
+        }
+    };
+
     var errors = [];
 
-    for(let i = 0; i < form.elements.length; i++) {
-        if(form.elements[i].required) {
-            errors.push('Не заполнено поле ' + form.elements[i].placeholder);
+    for (let fieldName in validators) {
+        if (form.elements.hasOwnProperty(fieldName)) {
+            if (validators[fieldName].required) {
+                errors.push('Не заполнено поле ' + form.elements[fieldName].placeholder);
+            } else if (!validators[fieldName].validate(form.elements[fieldName].value)) {
+                errors.push(validators[fieldName].messageNoValidation);
+            }
+        } else if (fieldName === 'map') {
+            if (!validators[fieldName].validate(window.myPlacemark)) {
+                errors.push(validators[fieldName].messageNoValidation);
+            }
         }
-    }
-
-    if(!(/^\d+$/g.test(form.elements['phone'].value))) {
-        errors.push('Телефон должен содержать только числа');
-    }
-
-    if(form.elements['email'].value.indexOf('@') == -1) {
-        errors.push('Email должен содержать символ собаки (@)');
-    }
-
-    if(form.elements['comment'].length > 500) {
-        errors.push('Комментарий к заказу должен быть не более 500 символов');
     }
 
     return errors;
@@ -51,8 +86,6 @@ function init(){
         searchControlProvider: 'yandex#search'
     });
 
-    var myPlacemark;
-
     myMap.events.add('click', function (e) {
         var coords = e.get('coords');
 
@@ -61,19 +94,18 @@ function init(){
             coords[1].toPrecision(6)
         ].join(', ');
 
-        if(myPlacemark === undefined) {
-            myPlacemark = new ymaps.Placemark(coords, {
-                balloonContentHeader: "Доставка",
-                balloonContentBody: '<p>Координаты доставки: ' + strCoords + '</p>',
-                hintContent: strCoords
-            });
-            myMap.geoObjects.add(myPlacemark);
+        var propertiesPlacemark = {
+            balloonContentBody: '<p>Координаты доставки: ' + strCoords + '</p>',
+            hintContent: strCoords
+        };
+
+        if(window.myPlacemark === undefined) {
+            propertiesPlacemark.balloonContentHeader = "Доставка";
+            window.myPlacemark = new ymaps.Placemark(coords, propertiesPlacemark);
+            myMap.geoObjects.add(window.myPlacemark);
         } else {
-            myPlacemark.geometry.setCoordinates(coords);
-            myPlacemark.properties.set({
-                balloonContentBody: '<p>Координаты доставки: ' + strCoords + '</p>',
-                hintContent: strCoords
-            });
+            window.myPlacemark.geometry.setCoordinates(coords);
+            window.myPlacemark.properties.set(propertiesPlacemark);
         }
     });
 }
