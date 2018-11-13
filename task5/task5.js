@@ -236,18 +236,23 @@ class Table {
         td.appendChild(input);
         input.focus();
 
-        input.addEventListener('blur', function (event) {
+        let finishEditBind = function () {
             this._finishTdEdit(this.editingTd.elem, true);
-        }.bind(this));
+        }.bind(this);
+
+        input.addEventListener('blur', finishEditBind);
 
         input.addEventListener('keydown', function (e) {
             e = e || window.event;
-            if (e.code == 'Escape' || e.key == 'Escape' || e.keyCode == 27) {
-                //проблема с blur(после нажатия срабатывает событие blur, поэтому в LS попадают не те данные)
+            const KEYCODE = {
+                ESC: 27
+            };
+
+            if (e.code == 'Escape' || e.key == 'Escape' || e.keyCode == KEYCODE.ESC) {
+                e.target.removeEventListener('blur', finishEditBind);
                 this._finishTdEdit(this.editingTd.elem, false);
             }
         }.bind(this));
-
     }
 
     _finishTdEdit(td, isOk) {
